@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AA — Client Testimonials. Manage and view testimonials from our valued clients.">
+  <title>AA — Testimonials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ========== RESET & BASE ========== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background-attachment: fixed;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    h1,h2,h3,h4 { font-family: 'Playfair Display', serif; font-weight: 600; color: #2c3e50; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+    ul { list-style: none; }
+    .section-pad { padding: 100px 5%; }
+    .accent { color: #2c3e50; }
+
+    /* ========== FADE-IN ANIMATION ========== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ========== NAVBAR ========== */
+    #navbar {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 5%;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 16px rgba(0,0,0,.08);
+      transition: background .35s, box-shadow .35s, padding .35s;
+    }
+    #navbar.scrolled {
+      padding: 14px 5%;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; font-weight: 700;
+      color: #2c3e50;
+      letter-spacing: 2px;
+      transition: color .35s;
+    }
+    .nav-links { display: flex; gap: 36px; }
+    .nav-links a {
+      font-size: 14px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: #2c3e50;
+      position: relative;
+      transition: color .3s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; left: 0; bottom: -4px;
+      width: 0; height: 2px;
+      background: #2c3e50;
+      transition: width .3s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-links a.active-link::after { width: 100%; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 1001;
+      background: none; border: none;
+    }
+    .hamburger span {
+      width: 26px; height: 2px;
+      background: #2c3e50;
+      transition: all .35s;
+    }
+    .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed; top: 0; right: -100%; width: 280px; height: 100vh;
+      background: #2c3e50; z-index: 999;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 32px;
+      transition: right .4s ease;
+    }
+    .mobile-menu.open { right: 0; }
+    .mobile-menu a {
+      font-size: 18px; font-weight: 500;
+      color: rgba(255,255,255,.85);
+      text-transform: uppercase; letter-spacing: 2px;
+      transition: color .3s;
+    }
+    .mobile-menu a:hover { color: #2c3e50; }
+    .mobile-overlay {
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,.5);
+      z-index: 998;
+      opacity: 0;
+      transition: opacity .4s;
+    }
+    .mobile-overlay.open { display: block; opacity: 1; }
+
+    /* ========== TESTIMONIALS PAGE HERO ========== */
+    .page-hero {
+      padding: 160px 5% 80px;
+      text-align: center;
+      background: linear-gradient(135deg, #2c3e50 0%, #1f2a36 100%);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 70%, rgba(255,255,255,.04) 0%, transparent 60%);
+      animation: heroShimmer 12s ease-in-out infinite;
+    }
+    @keyframes heroShimmer {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(5%, -3%); }
+    }
+    .page-hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      color: #fff;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .page-hero p {
+      color: rgba(255,255,255,.7);
+      font-size: clamp(14px, 1.4vw, 17px);
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ========== CRUD SECTION ========== */
+    .testimonials-section {
+      padding: 80px 5%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* --- FORM --- */
+    .testi-form-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.06);
+      border: 1px solid #ecf0f1;
+      margin-bottom: 56px;
+    }
+    .testi-form-card h2 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    .testi-form-card .form-subtitle {
+      color: #7f8c8d;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+    .testi-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .testi-form-grid .full-width {
+      grid-column: 1 / -1;
+    }
+    .testi-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2c3e50;
+      font-size: 14px;
+    }
+    .testi-input,
+    .testi-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #ecf0f1;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all .3s ease;
+      background: #fff;
+    }
+    .testi-input:focus,
+    .testi-textarea:focus {
+      outline: none;
+      border-color: #2c3e50;
+      box-shadow: 0 0 0 3px rgba(44, 62, 80, .12);
+    }
+    .testi-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .btn-tambah {
+      padding: 12px 36px;
+      background: linear-gradient(135deg, #2c3e50 0%, #1f2a36 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all .3s ease;
+    }
+    .btn-tambah:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(44, 62, 80, .3);
+    }
+    .btn-batal {
+      padding: 12px 28px;
+      background: transparent;
+      color: #2c3e50;
+      border: 2px solid #ecf0f1;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all .3s ease;
+      display: none;
+    }
+    .btn-batal:hover {
+      border-color: #e74c3c;
+      color: #e74c3c;
+    }
+
+    /* --- TABLE / LIST --- */
+    .testi-list-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.06);
+      border: 1px solid #ecf0f1;
+    }
+    .testi-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .testi-list-header h2 {
+      font-size: 28px;
+    }
+    .testi-count {
+      background: linear-gradient(135deg, #2c3e50 0%, #1f2a36 100%);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+    .testi-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #7f8c8d;
+    }
+    .testi-empty .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: .5;
+    }
+    .testi-empty p {
+      font-size: 15px;
+    }
+
+    /* Table */
+    .testi-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .testi-table thead th {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #7f8c8d;
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 2px solid #ecf0f1;
+      white-space: nowrap;
+    }
+    .testi-table tbody tr {
+      transition: background .2s;
+    }
+    .testi-table tbody tr:hover {
+      background: rgba(44, 62, 80, .02);
+    }
+    .testi-table tbody td {
+      padding: 18px 16px;
+      font-size: 14px;
+      color: #333;
+      border-bottom: 1px solid #ecf0f1;
+      vertical-align: top;
+    }
+    .testi-table tbody td:first-child {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    .td-company {
+      color: #7f8c8d !important;
+      font-size: 13px !important;
+    }
+    .td-content {
+      max-width: 320px;
+      line-height: 1.6;
+    }
+    .td-actions {
+      white-space: nowrap;
+    }
+    .btn-edit,
+    .btn-hapus {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      transition: all .3s ease;
+      margin-right: 6px;
+    }
+    .btn-edit {
+      background: linear-gradient(135deg, #2c3e50 0%, #1f2a36 100%);
+      color: #fff;
+    }
+    .btn-edit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(44, 62, 80, .25);
+    }
+    .btn-hapus {
+      background: transparent;
+      border: 2px solid #e74c3c;
+      color: #e74c3c;
+    }
+    .btn-hapus:hover {
+      background: #e74c3c;
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, .25);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: #2c3e50;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0,0,0,.18);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all .35s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .toast.success { background: #27ae60; }
+    .toast.error { background: #e74c3c; }
+
+    /* Confirm Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.show {
+      display: flex;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 16px 48px rgba(0,0,0,.12);
+      animation: modalIn .3s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-box h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .modal-box p {
+      color: #7f8c8d;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .modal-actions button {
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      transition: all .3s;
+    }
+    .modal-cancel {
+      background: transparent;
+      border: 2px solid #ecf0f1;
+      color: #7f8c8d;
+    }
+    .modal-cancel:hover {
+      border-color: #2c3e50;
+      color: #2c3e50;
+    }
+    .modal-confirm {
+      background: #e74c3c;
+      border: none;
+      color: #fff;
+    }
+    .modal-confirm:hover {
+      background: #c0392b;
+      box-shadow: 0 4px 12px rgba(231,76,60,.3);
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      background: #2c3e50;
+      color: rgba(255,255,255,.7);
+      padding: 64px 5% 0;
+    }
+    .footer-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 48px;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+    .footer-col h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .footer-col a {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      transition: color .3s;
+    }
+    .footer-col a:hover { color: #2c3e50; }
+    .social-links { display: flex; gap: 16px; }
+    .social-links a {
+      width: 40px; height: 40px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      color: rgba(255,255,255,.7);
+      transition: background .3s, color .3s, border-color .3s;
+    }
+    .social-links a:hover {
+      background: linear-gradient(135deg, #2c3e50 0%, #2c3e50 100%);
+      border-color: #2c3e50;
+      color: #fff;
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.12);
+      text-align: center;
+      padding: 24px 0;
+      font-size: 13px;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .mobile-menu { display: flex; }
+      .testi-form-grid { grid-template-columns: 1fr; }
+      .testi-table { font-size: 13px; }
+      .testi-table thead { display: none; }
+      .testi-table tbody tr {
+        display: block;
+        padding: 16px;
+        border-bottom: 2px solid #ecf0f1;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        background: rgba(245,247,250,.5);
+      }
+      .testi-table tbody td {
+        display: block;
+        border: none;
+        padding: 4px 0;
+      }
+      .testi-table tbody td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+        color: #7f8c8d;
+        display: block;
+        margin-bottom: 4px;
+      }
+      .td-actions { margin-top: 12px; }
+      .footer-grid { grid-template-columns: 1fr; text-align: center; }
+      .social-links { justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .testi-form-card,
+      .testi-list-card { padding: 24px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav id="navbar">
+  <a href="dashboard.html" class="nav-logo">AA</a>
+  <div class="nav-links">
+    <a href="dashboard.html">Home</a>
+    <a href="testimonials.html" class="active-link">Testimonials</a>
+    <a href="dashboard.html#gallery">Gallery</a>
+    <a href="dashboard.html#about">About Us</a>
+  </div>
+  <div class="nav-actions">
+    <a href="login.html" id="loginBtn" class="btn" style="display:none;">Login</a>
+    <button id="logoutBtn" class="btn" style="display:none;">Log out</button>
+  </div>
+  <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-overlay" id="mobileOverlay"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="dashboard.html">Home</a>
+  <a href="testimonials.html">Testimonials</a>
+  <a href="dashboard.html#gallery">Gallery</a>
+  <a href="dashboard.html#about">About Us</a>
+  <a href="login.html" id="loginMobileLink" style="display:none;">Login</a>
+  <a href="#" id="logoutMobileLink" style="display:none;">Log out</a>
+</div>
+
+<!-- ==================== PAGE HERO ==================== -->
+<section class="page-hero">
+  <h1>Client Testimonials</h1>
+  <p>Kelola dan tampilkan testimoni dari klien-klien kami yang berharga.</p>
+</section>
+
+<!-- ==================== CRUD SECTION ==================== -->
+<div class="testimonials-section">
+
+  <!-- FORM INPUT -->
+  <div class="testi-form-card fade-in" id="formCard">
+    <h2 id="formTitle">Tambah Testimoni</h2>
+    <p class="form-subtitle">Masukkan data testimoni klien baru di bawah ini.</p>
+    <form id="testiForm" autocomplete="off">
+      <div class="testi-form-grid">
+        <div>
+          <label class="testi-label" for="clientName">Nama Klien</label>
+          <input type="text" class="testi-input" id="clientName" placeholder="Contoh: John Doe" required>
+        </div>
+        <div>
+          <label class="testi-label" for="companyName">Nama Perusahaan</label>
+          <input type="text" class="testi-input" id="companyName" placeholder="Contoh: PT Inovasi Digital" required>
+        </div>
+        <div class="full-width">
+          <label class="testi-label" for="testiContent">Isi Testimoni</label>
+          <textarea class="testi-textarea" id="testiContent" placeholder="Tulis testimoni klien di sini..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-tambah" id="submitBtn">Tambah Testimoni</button>
+          <button type="button" class="btn-batal" id="cancelBtn">Batal</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- LIST / TABLE -->
+  <div class="testi-list-card fade-in" id="listCard">
+    <div class="testi-list-header">
+      <h2>Daftar Testimoni</h2>
+      <span class="testi-count" id="testiCount">0 Testimoni</span>
+    </div>
+    <div id="testiListContainer">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-logo">AA</div>
+      <p>Crafting digital experiences with elegance and purpose.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="dashboard.html">Home</a>
+      <a href="testimonials.html">Testimonials</a>
+      <a href="dashboard.html#gallery">Gallery</a>
+      <a href="dashboard.html#about">About Us</a>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <div class="social-links">
+        <a href="#" aria-label="Instagram" title="Instagram">&#9679;</a>
+        <a href="#" aria-label="LinkedIn" title="LinkedIn">in</a>
+        <a href="#" aria-label="GitHub" title="GitHub">&#9672;</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; 2025 AA. All rights reserved.</div>
+</footer>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <h3>Hapus Testimoni?</h3>
+    <p>Tindakan ini tidak dapat dibatalkan. Testimoni akan dihapus secara permanen.</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="modalCancelBtn">Batal</button>
+      <button class="modal-confirm" id="modalConfirmBtn">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+  /* --- Navbar scroll effect --- */
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  /* --- Mobile menu --- */
+  const hamburger = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const overlay = document.getElementById('mobileOverlay');
+
+  function closeMobile() {
+    hamburger.classList.remove('active');
+    mobileMenu.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.contains('open');
+    if (isOpen) { closeMobile(); }
+    else {
+      hamburger.classList.add('active');
+      mobileMenu.classList.add('open');
+      overlay.classList.add('open');
+    }
+  });
+  overlay.addEventListener('click', closeMobile);
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobile));
+
+  /* --- Intersection Observer fade-in --- */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  /* --- Guest / Auth mode --- */
+  const logoutBtn = document.getElementById('logoutBtn');
+  const logoutMobileLink = document.getElementById('logoutMobileLink');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginMobileLink = document.getElementById('loginMobileLink');
+  const hasToken = !!localStorage.getItem('token');
+
+  if (!hasToken) {
+    // Guest: hide form, show login button
+    const formCard = document.getElementById('formCard');
+    if (formCard) formCard.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = 'inline-block';
+    if (loginMobileLink) loginMobileLink.style.display = 'block';
+  } else {
+    // Logged in: show logout button
+    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+    if (logoutMobileLink) logoutMobileLink.style.display = 'block';
+  }
+
+  function handleLogout(e) {
+    if (e) e.preventDefault();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+  }
+
+  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+  if (logoutMobileLink) logoutMobileLink.addEventListener('click', handleLogout);
+</script>
+
+<!-- CRUD Logic -->
+<script src="testimonials.js"></script>
+
+</body>
+</html>

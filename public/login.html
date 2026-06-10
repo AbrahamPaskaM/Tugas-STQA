@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AA — Login. Masuk ke akun portofolio Anda.">
+  <title>AA — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+
+<nav id="navbar" class="auth-nav">
+  <a href="dashboard.html" class="nav-logo">AA</a>
+  <div class="nav-links">
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+  </div>
+</nav>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Masuk ke akun Anda untuk mengelola portofolio</p>
+    <div class="general-error" id="generalError"></div>
+    <form id="loginForm" novalidate>
+      <div class="form-group" id="emailGroup">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="nama@upitra.ac.id">
+        <span class="error" id="emailError"></span>
+      </div>
+      <div class="form-group" id="passwordGroup">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Masukkan password">
+        <label class="show-password"><input type="checkbox" id="showPassword"> Tampilkan password</label>
+        <span class="error" id="passwordError"></span>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">Masuk</button>
+    </form>
+    <div class="auth-footer">Belum punya akun? <a href="register.html">Daftar di sini</a></div>
+  </div>
+</div>
+
+<footer><div class="footer-bottom">&copy; 2025 AA. All rights reserved.</div></footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('loginForm');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const submitBtn = document.getElementById('submitBtn');
+  const generalError = document.getElementById('generalError');
+  const showPw = document.getElementById('showPassword');
+  if (showPw) showPw.addEventListener('change', e => { passwordInput.type = e.target.checked ? 'text' : 'password'; });
+
+  emailInput.addEventListener('input', () => { document.getElementById('emailError').style.display='none'; emailInput.style.borderColor='#ecf0f1'; });
+  passwordInput.addEventListener('input', () => { document.getElementById('passwordError').style.display='none'; passwordInput.style.borderColor='#ecf0f1'; });
+
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); hideAllErrors();
+    const email = emailInput.value.trim(), password = passwordInput.value;
+    let hasError = false;
+    if (!email) { showError('email','Email wajib diisi'); hasError=true; }
+    else if (!email.endsWith('@upitra.ac.id')) { showError('email','Email harus menggunakan domain @upitra.ac.id'); hasError=true; }
+    if (!password) { showError('password','Password wajib diisi'); hasError=true; }
+    if (hasError) return;
+    try {
+      submitBtn.disabled=true; submitBtn.textContent='Memproses...';
+      const res = await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('token',data.token); localStorage.setItem('user',JSON.stringify(data.user));
+        localStorage.removeItem('guestMode');
+        window.location.href='dashboard.html';
+      } else {
+        if (data.errors && typeof data.errors==='object') { Object.keys(data.errors).forEach(f => f==='general'?showGeneralError(data.errors[f]):showError(f,data.errors[f])); }
+        else if (data.message) showGeneralError(data.message);
+        else showGeneralError('Login gagal. Silakan coba lagi.');
+      }
+    } catch(err) { showGeneralError('Tidak dapat terhubung ke server.'); }
+    finally { submitBtn.disabled=false; submitBtn.textContent='Masuk'; }
+  });
+
+  function showError(field,msg) { const el=document.getElementById(field+'Error'),inp=document.getElementById(field); if(el){el.textContent=msg;el.style.display='block';} if(inp)inp.style.borderColor='#e74c3c'; }
+  function hideAllErrors() { document.getElementById('emailError').style.display='none'; document.getElementById('passwordError').style.display='none'; emailInput.style.borderColor='#ecf0f1'; passwordInput.style.borderColor='#ecf0f1'; generalError.style.display='none'; generalError.textContent=''; }
+  function showGeneralError(msg) { generalError.textContent=msg; generalError.style.display='block'; }
+});
+</script>
+</body>
+</html>

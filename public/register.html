@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AA — Registrasi. Buat akun baru Anda.">
+  <title>AA — Registrasi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+
+<nav id="navbar" class="auth-nav">
+  <a href="dashboard.html" class="nav-logo">AA</a>
+  <div class="nav-links">
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+  </div>
+</nav>
+
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>Buat Akun</h1>
+    <p class="subtitle">Daftarkan diri Anda untuk mulai mengelola portofolio</p>
+    <div class="success-msg" id="successMessage"></div>
+    <div class="general-error" id="generalError"></div>
+    <form id="registerForm" novalidate>
+      <div class="form-group">
+        <label for="nama">Nama Lengkap</label>
+        <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap">
+        <span class="error" id="namaError"></span>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="nama@upitra.ac.id">
+        <span class="error" id="emailError"></span>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Minimal 8 karakter">
+        <label class="show-password"><input type="checkbox" id="showPassword"> Tampilkan password</label>
+        <span class="error" id="passwordError"></span>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Konfirmasi Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Ulangi password">
+        <label class="show-password"><input type="checkbox" id="showConfirmPassword"> Tampilkan password</label>
+        <span class="error" id="confirmPasswordError"></span>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">Daftar</button>
+    </form>
+    <div class="auth-footer">Sudah punya akun? <a href="login.html">Masuk di sini</a></div>
+  </div>
+</div>
+
+<footer><div class="footer-bottom">&copy; 2025 AA. All rights reserved.</div></footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('registerForm');
+  const namaInput = document.getElementById('nama');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const submitBtn = document.getElementById('submitBtn');
+
+  document.getElementById('showPassword').addEventListener('change', e => { passwordInput.type = e.target.checked ? 'text' : 'password'; });
+  document.getElementById('showConfirmPassword').addEventListener('change', e => { confirmPasswordInput.type = e.target.checked ? 'text' : 'password'; });
+
+  namaInput.addEventListener('input', () => hideError('nama'));
+  emailInput.addEventListener('input', () => hideError('email'));
+  passwordInput.addEventListener('input', () => hideError('password'));
+  confirmPasswordInput.addEventListener('input', () => hideError('confirmPassword'));
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); hideAllErrors();
+    const nama=namaInput.value.trim(), email=emailInput.value.trim(), password=passwordInput.value, confirmPassword=confirmPasswordInput.value;
+    let hasError=false;
+    if (!nama) { showError('nama','Nama lengkap wajib diisi'); hasError=true; }
+    if (!email) { showError('email','Email wajib diisi'); hasError=true; }
+    else if (!email.endsWith('@upitra.ac.id')) { showError('email','Email harus menggunakan domain @upitra.ac.id'); hasError=true; }
+    if (!password) { showError('password','Password wajib diisi'); hasError=true; }
+    else if (password.length<8) { showError('password','Password minimal 8 karakter'); hasError=true; }
+    if (!confirmPassword) { showError('confirmPassword','Konfirmasi password wajib diisi'); hasError=true; }
+    else if (password!==confirmPassword) { showError('confirmPassword','Password tidak sama'); hasError=true; }
+    if (hasError) return;
+    try {
+      submitBtn.disabled=true; submitBtn.textContent='Memproses...';
+      const res = await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nama,email,password,confirmPassword})});
+      const data = await res.json();
+      if (data.success) {
+        showSuccess('Registrasi berhasil! Mengalihkan ke halaman login...');
+        form.reset();
+        setTimeout(() => { window.location.href='login.html'; }, 2000);
+      } else {
+        if (data.errors) { Object.keys(data.errors).forEach(f => f==='general'?showGeneralError(data.errors[f]):showError(f,data.errors[f])); }
+      }
+    } catch(err) { showGeneralError('Tidak dapat terhubung ke server.'); }
+    finally { submitBtn.disabled=false; submitBtn.textContent='Daftar'; }
+  });
+
+  function showError(field,msg) { const inp=document.getElementById(field), el=document.getElementById(field+'Error'); inp.parentElement.classList.add('error'); el.textContent=msg; el.style.display='block'; }
+  function hideError(field) { const inp=document.getElementById(field), el=document.getElementById(field+'Error'); inp.parentElement.classList.remove('error'); el.textContent=''; el.style.display='none'; }
+  function hideAllErrors() { document.querySelectorAll('.form-group').forEach(g=>g.classList.remove('error')); document.querySelectorAll('.error').forEach(e=>{e.style.display='none';}); document.getElementById('generalError').style.display='none'; document.getElementById('successMessage').style.display='none'; }
+  function showGeneralError(msg) { const el=document.getElementById('generalError'); el.textContent=msg; el.style.display='block'; }
+  function showSuccess(msg) { const el=document.getElementById('successMessage'); el.textContent=msg; el.style.display='block'; }
+});
+</script>
+</body>
+</html>

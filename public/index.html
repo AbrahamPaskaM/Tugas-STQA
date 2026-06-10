@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-form {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #ecf0f1;
+        }
+
+        .auth-form h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .auth-form .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+border-color: #2c3e50;
+box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.12);
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.error input {
+            border-color: #e74c3c;
+        }
+
+        .form-group.error .error {
+            display: block;
+        }
+
+        .general-error {
+            background: #fee;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: none;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .show-password {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #7f8c8d;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .show-password input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+background: linear-gradient(135deg, #2c3e50 0%, #1f2a36 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+.auth-footer a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+.auth-footer a:hover {
+            color: #1f2a36;
+        }
+    </style>
+</head>
+
+<body style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div class="auth-container">
+        <div class="auth-form">
+            <h1>Login</h1>
+            <p class="subtitle">Masuk ke akun Anda</p>
+
+            <div class="general-error" id="generalError" style="display: none;"></div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-group" id="emailGroup" style="margin-bottom: 20px;">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="nama@upitra.ac.id" style="width: 100%; padding: 12px 16px; border: 2px solid #dee2e6; border-radius: 8px;">
+                    <span class="error" id="emailError" style="color: #e74c3c; font-size: 12px; margin-top: 5px; display: none;"></span>
+                </div>
+
+                <div class="form-group" id="passwordGroup" style="margin-bottom: 20px;">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Masukkan password" style="width: 100%; padding: 12px 16px; border: 2px solid #dee2e6; border-radius: 8px; display: block;">
+                    <div class="show-password" style="display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 20px; font-size: 13px; color: #7f8c8d; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="showPassword" style="width: auto; cursor: pointer;"> 
+                        <span>Tampilkan password</span>
+                    </div>
+                    <span class="error" id="passwordError" style="color: #e74c3c; font-size: 12px; margin-top: 5px; display: none;"></span>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #2c3e50 0%, #1f2a36 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; text-transform: uppercase;">Masuk</button>
+            </form>
+
+            <div class="auth-footer">
+                Belum punya akun? <a href="register.html">Daftar di sini</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔍 Script login dimulai');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM loaded');
+            
+            const form = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const submitBtn = document.getElementById('submitBtn');
+            const generalError = document.getElementById('generalError');
+            const showPasswordCheckbox = document.getElementById('showPassword');
+
+            console.log('✅ Semua element ditemukan:', { form, emailInput, passwordInput, submitBtn });
+
+            // Toggle tampilkan password
+            if (showPasswordCheckbox) {
+                showPasswordCheckbox.addEventListener('change', (e) => {
+                    console.log('Password visibility toggle:', e.target.checked);
+                    passwordInput.type = e.target.checked ? 'text' : 'password';
+                });
+            }
+
+            // Bersihkan error saat user ketik
+            emailInput.addEventListener('input', () => {
+                document.getElementById('emailError').style.display = 'none';
+                document.getElementById('emailGroup').style.borderColor = '#dee2e6';
+            });
+
+            passwordInput.addEventListener('input', () => {
+                document.getElementById('passwordError').style.display = 'none';
+                document.getElementById('passwordGroup').style.borderColor = '#dee2e6';
+            });
+
+            // Handle form submit
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('📤 Form submit dipicu');
+                
+                hideAllErrors();
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                let hasError = false;
+
+                console.log('📋 Input values:', { email, password: '***' });
+
+                // Validasi email
+                if (!email) {
+                    showError('email', 'Email wajib diisi');
+                    hasError = true;
+                } else if (!email.endsWith('@upitra.ac.id')) {
+                    showError('email', 'Email harus menggunakan domain @upitra.ac.id');
+                    hasError = true;
+                }
+
+                // Validasi password
+                if (!password) {
+                    showError('password', 'Password wajib diisi');
+                    hasError = true;
+                }
+
+                if (hasError) {
+                    console.log('⚠️ Validasi lokal gagal');
+                    return;
+                }
+
+                try {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Memproses...';
+
+                    console.log('🌐 Mengirim request ke /api/login');
+
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    console.log('📥 Response status:', response.status);
+
+                    const data = await response.json();
+                    console.log('📥 Response data:', data);
+
+                    if (data.success) {
+                        console.log('✅ Login berhasil');
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        // Tampilkan error dari server
+                        console.log('❌ Login gagal, errors:', data.errors);
+                        
+                        if (data.errors && typeof data.errors === 'object') {
+                            Object.keys(data.errors).forEach(field => {
+                                if (field === 'general') {
+                                    showGeneralError(data.errors[field]);
+                                } else {
+                                    showError(field, data.errors[field]);
+                                }
+                            });
+                        } else if (data.message) {
+                            showGeneralError(data.message);
+                        } else {
+                            showGeneralError('Login gagal. Silakan coba lagi.');
+                        }
+                    }
+                } catch (error) {
+                    console.error('🔥 Error saat login:', error);
+                    showGeneralError('Tidak dapat terhubung ke server. Pastikan server sedang berjalan.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Masuk';
+                }
+            });
+
+            function showError(field, msg) {
+                const errorEl = document.getElementById(field + 'Error');
+                const groupEl = document.getElementById(field + 'Group');
+                
+                if (errorEl && groupEl) {
+                    errorEl.textContent = msg;
+                    errorEl.style.display = 'block';
+                    groupEl.style.borderColor = '#e74c3c';
+                    console.log(`❌ Error di ${field}: ${msg}`);
+                }
+            }
+
+            function hideAllErrors() {
+                document.getElementById('emailError').style.display = 'none';
+                document.getElementById('passwordError').style.display = 'none';
+                document.getElementById('emailGroup').style.borderColor = '#dee2e6';
+                document.getElementById('passwordGroup').style.borderColor = '#dee2e6';
+                generalError.style.display = 'none';
+                generalError.textContent = '';
+            }
+
+            function showGeneralError(msg) {
+                generalError.textContent = msg;
+                generalError.style.display = 'block';
+                console.log('⚠️ Error umum:', msg);
+            }
+
+            console.log('✅ Event listeners terpasang');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,245 @@
+/* =========================================================
+   auth-style.css — Shared styling for Login & Register pages
+   Consistent with dashboard.html design system
+   ========================================================= */
+
+/* ========== AUTH NAVBAR ========== */
+.auth-nav {
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 5%;
+  background: rgba(255,255,255,.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 16px rgba(0,0,0,.08);
+}
+.auth-nav .nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 700;
+  color: #2c3e50;
+  letter-spacing: 2px;
+}
+.auth-nav .nav-links { display: flex; gap: 36px; }
+.auth-nav .nav-links a {
+  font-size: 14px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: #2c3e50;
+  position: relative;
+  transition: color .3s;
+}
+.auth-nav .nav-links a::after {
+  content: '';
+  position: absolute; left: 0; bottom: -4px;
+  width: 0; height: 2px;
+  background: #2c3e50;
+  transition: width .3s;
+}
+.auth-nav .nav-links a:hover::after { width: 100%; }
+
+/* Make the Login text bright blue */
+.auth-nav .nav-links a[href="login.html"] {
+  color: #3498db;
+  font-weight: 600;
+}
+.auth-nav .nav-links a[href="login.html"]::after {
+  background: #3498db;
+}
+
+/* ========== AUTH PAGE LAYOUT ========== */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 120px 5% 80px;
+}
+
+/* ========== AUTH CARD ========== */
+.auth-card {
+  background: #fff;
+  padding: 48px;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.08);
+  width: 100%;
+  max-width: 460px;
+  border: 1px solid #ecf0f1;
+  position: relative;
+  overflow: hidden;
+}
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #2c3e50 0%, #1f2a36 100%);
+}
+.auth-card h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 8px;
+  color: #2c3e50;
+}
+.auth-card .subtitle {
+  text-align: center;
+  color: #7f8c8d;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+/* ========== FORM ELEMENTS ========== */
+.auth-card .form-group {
+  margin-bottom: 20px;
+}
+.auth-card .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+}
+.auth-card .form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+.auth-card .form-group input:focus {
+  outline: none;
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.12);
+}
+.auth-card .error {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 5px;
+  display: none;
+}
+.auth-card .general-error {
+  background: rgba(231, 76, 60, 0.07);
+  color: #e74c3c;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  display: none;
+  border-left: 4px solid #e74c3c;
+}
+.auth-card .success-msg {
+  background: rgba(39, 174, 96, 0.07);
+  color: #27ae60;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  display: none;
+  border-left: 4px solid #27ae60;
+}
+.auth-card .show-password {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #7f8c8d;
+  cursor: pointer;
+  user-select: none;
+}
+.auth-card .show-password input[type="checkbox"] {
+  width: auto; cursor: pointer; margin: 0; padding: 0; border: none;
+}
+
+/* ========== BUTTONS ========== */
+.auth-card .btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #2c3e50 0%, #1f2a36 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 24px;
+}
+.auth-card .btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
+}
+.auth-card .btn-submit:disabled {
+  opacity: 0.6; cursor: not-allowed;
+}
+
+/* ========== DIVIDER ========== */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  color: #bdc3c7;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: ''; flex: 1; height: 1px; background: #ecf0f1;
+}
+
+/* ========== GUEST BUTTON ========== */
+.btn-guest {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: #2c3e50;
+  border: 2px solid #ecf0f1;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: .5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-guest:hover {
+  border-color: #2c3e50;
+  background: rgba(44, 62, 80, .04);
+  transform: translateY(-1px);
+}
+.btn-guest .guest-icon { font-size: 18px; }
+
+/* ========== AUTH FOOTER ========== */
+.auth-card .auth-footer {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 14px;
+  color: #7f8c8d;
+}
+.auth-card .auth-footer a {
+  color: #2c3e50;
+  font-weight: 600;
+  transition: color .3s;
+  text-decoration: none;
+}
+.auth-card .auth-footer a:hover { color: #1f2a36; }
+
+/* ========== FOOTER ========== */
+.auth-page ~ footer {
+  background: #2c3e50;
+  color: rgba(255,255,255,.7);
+  padding: 0 5%;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 480px) {
+  .auth-card { padding: 28px; }
+  .auth-nav .nav-links { display: none; }
+}
