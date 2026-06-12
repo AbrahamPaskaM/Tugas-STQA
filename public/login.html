@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,85 +11,216 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="auth-style.css">
+  <style>
+    /* ── Spinner animasi ── */
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255, 255, 255, .4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Input error state ── */
+    .form-group.has-error input {
+      border-color: #e74c3c !important;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, .12);
+    }
+    .form-group .field-error {
+      color: #e74c3c;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+    .form-group.has-error .field-error {
+      display: block;
+    }
+  </style>
 </head>
+
 <body>
 
-<nav id="navbar" class="auth-nav">
-  <a href="dashboard.html" class="nav-logo">AA</a>
-  <div class="nav-links">
-    <a href="login.html">Login</a>
-    <a href="register.html">Register</a>
+  <nav id="navbar" class="auth-nav">
+    <a href="dashboard.html" class="nav-logo">AA</a>
+    <div class="nav-links">
+      <a href="login.html">Login</a>
+      <a href="register.html">Register</a>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <h1>Welcome Back</h1>
+      <p class="subtitle">Masuk ke akun Anda untuk mengelola portofolio</p>
+
+      <!-- Pesan error umum (dari server) -->
+      <div class="general-error" id="generalError" style="display:none;"></div>
+
+      <form id="loginForm" novalidate>
+        <!-- Email -->
+        <div class="form-group" id="grpEmail">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="nama@upitra.ac.id" autocomplete="email">
+          <span class="field-error" id="emailError"></span>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group" id="grpPassword">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Masukkan password" autocomplete="current-password">
+          <label class="show-password">
+            <input type="checkbox" id="showPassword"> Tampilkan password
+          </label>
+          <span class="field-error" id="passwordError"></span>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">Masuk</button>
+      </form>
+
+      <div class="auth-footer">Belum punya akun? <a href="register.html">Daftar di sini</a></div>
+    </div>
   </div>
-</nav>
 
-<div class="auth-page">
-  <div class="auth-card">
-    <h1>Welcome Back</h1>
-    <p class="subtitle">Masuk ke akun Anda untuk mengelola portofolio</p>
-    <div class="general-error" id="generalError"></div>
-    <form id="loginForm" novalidate>
-      <div class="form-group" id="emailGroup">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="nama@upitra.ac.id">
-        <span class="error" id="emailError"></span>
-      </div>
-      <div class="form-group" id="passwordGroup">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Masukkan password">
-        <label class="show-password"><input type="checkbox" id="showPassword"> Tampilkan password</label>
-        <span class="error" id="passwordError"></span>
-      </div>
-      <button type="submit" class="btn-submit" id="submitBtn">Masuk</button>
-    </form>
-    <div class="auth-footer">Belum punya akun? <a href="register.html">Daftar di sini</a></div>
-  </div>
-</div>
+  <footer>
+    <div class="footer-bottom">&copy; 2025 AA. All rights reserved.</div>
+  </footer>
 
-<footer><div class="footer-bottom">&copy; 2025 AA. All rights reserved.</div></footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('loginForm');
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const submitBtn = document.getElementById('submitBtn');
-  const generalError = document.getElementById('generalError');
-  const showPw = document.getElementById('showPassword');
-  if (showPw) showPw.addEventListener('change', e => { passwordInput.type = e.target.checked ? 'text' : 'password'; });
+      // ── Guard: jika sudah login, langsung ke dashboard ──
+      try {
+        if (localStorage.getItem('token')) {
+          window.location.replace('dashboard.html');
+          return;
+        }
+      } catch (e) { /* private/incognito mode */ }
 
-  emailInput.addEventListener('input', () => { document.getElementById('emailError').style.display='none'; emailInput.style.borderColor='#ecf0f1'; });
-  passwordInput.addEventListener('input', () => { document.getElementById('passwordError').style.display='none'; passwordInput.style.borderColor='#ecf0f1'; });
+      // ── Elemen DOM ──
+      const form         = document.getElementById('loginForm');
+      const emailInput   = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const submitBtn    = document.getElementById('submitBtn');
+      const generalError = document.getElementById('generalError');
 
+      // ── Toggle show/hide password ──
+      document.getElementById('showPassword').addEventListener('change', e => {
+        passwordInput.type = e.target.checked ? 'text' : 'password';
+      });
 
-  form.addEventListener('submit', async e => {
-    e.preventDefault(); hideAllErrors();
-    const email = emailInput.value.trim(), password = passwordInput.value;
-    let hasError = false;
-    if (!email) { showError('email','Email wajib diisi'); hasError=true; }
-    else if (!email.endsWith('@upitra.ac.id')) { showError('email','Email harus menggunakan domain @upitra.ac.id'); hasError=true; }
-    if (!password) { showError('password','Password wajib diisi'); hasError=true; }
-    if (hasError) return;
-    try {
-      submitBtn.disabled=true; submitBtn.textContent='Memproses...';
-      const res = await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
-      const data = await res.json();
-      if (data.success) {
-        localStorage.setItem('token',data.token); localStorage.setItem('user',JSON.stringify(data.user));
-        localStorage.removeItem('guestMode');
-        window.location.href='dashboard.html';
-      } else {
-        if (data.errors && typeof data.errors==='object') { Object.keys(data.errors).forEach(f => f==='general'?showGeneralError(data.errors[f]):showError(f,data.errors[f])); }
-        else if (data.message) showGeneralError(data.message);
-        else showGeneralError('Login gagal. Silakan coba lagi.');
+      // ── Clear error saat mengetik ──
+      emailInput.addEventListener('input',    () => clearError('grpEmail',    'emailError'));
+      passwordInput.addEventListener('input', () => clearError('grpPassword', 'passwordError'));
+
+      // ── Submit handler ──
+      form.addEventListener('submit', async e => {
+        e.preventDefault();
+        hideGeneral();
+
+        const email    = emailInput.value.trim();
+        const password = passwordInput.value;
+        let valid = true;
+
+        // Validasi email
+        if (!email) {
+          setError('grpEmail', 'emailError', 'Email wajib diisi');
+          valid = false;
+        } else if (!email.toLowerCase().endsWith('@upitra.ac.id')) {
+          setError('grpEmail', 'emailError', 'Email harus menggunakan domain @upitra.ac.id');
+          valid = false;
+        } else {
+          clearError('grpEmail', 'emailError');
+        }
+
+        // Validasi password
+        if (!password) {
+          setError('grpPassword', 'passwordError', 'Password wajib diisi');
+          valid = false;
+        } else {
+          clearError('grpPassword', 'passwordError');
+        }
+
+        if (!valid) return; // Error sudah ditampilkan, berhenti di sini
+
+        // ── Kirim ke server ──
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> Memproses...';
+
+        try {
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            try {
+              localStorage.setItem('token', data.token);
+              localStorage.setItem('user', JSON.stringify(data.user));
+            } catch (e) {}
+            submitBtn.innerHTML = '✓ Berhasil!';
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+          } else {
+            // Error dari server
+            if (data.errors && typeof data.errors === 'object') {
+              Object.keys(data.errors).forEach(field => {
+                if (field === 'general') {
+                  showGeneral(data.errors[field]);
+                } else if (field === 'email') {
+                  setError('grpEmail', 'emailError', data.errors[field]);
+                } else if (field === 'password') {
+                  setError('grpPassword', 'passwordError', data.errors[field]);
+                }
+              });
+            } else {
+              showGeneral(data.message || 'Login gagal. Silakan coba lagi.');
+            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Masuk';
+          }
+        } catch (err) {
+          showGeneral('Tidak dapat terhubung ke server. Periksa koneksi Anda.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Masuk';
+        }
+      });
+
+      // ── Helper functions ──
+
+      /** Tampilkan error pada field tertentu */
+      function setError(groupId, errorId, message) {
+        const group = document.getElementById(groupId);
+        const span  = document.getElementById(errorId);
+        if (group) group.classList.add('has-error');
+        if (span)  { span.textContent = message; span.style.display = 'block'; }
       }
-    } catch(err) { showGeneralError('Tidak dapat terhubung ke server.'); }
-    finally { submitBtn.disabled=false; submitBtn.textContent='Masuk'; }
-  });
 
-  function showError(field,msg) { const el=document.getElementById(field+'Error'),inp=document.getElementById(field); if(el){el.textContent=msg;el.style.display='block';} if(inp)inp.style.borderColor='#e74c3c'; }
-  function hideAllErrors() { document.getElementById('emailError').style.display='none'; document.getElementById('passwordError').style.display='none'; emailInput.style.borderColor='#ecf0f1'; passwordInput.style.borderColor='#ecf0f1'; generalError.style.display='none'; generalError.textContent=''; }
-  function showGeneralError(msg) { generalError.textContent=msg; generalError.style.display='block'; }
-});
-</script>
+      /** Hapus error pada field tertentu */
+      function clearError(groupId, errorId) {
+        const group = document.getElementById(groupId);
+        const span  = document.getElementById(errorId);
+        if (group) group.classList.remove('has-error');
+        if (span)  { span.textContent = ''; span.style.display = 'none'; }
+      }
+
+      /** Tampilkan pesan error umum */
+      function showGeneral(msg) {
+        generalError.textContent = msg;
+        generalError.style.display = 'block';
+      }
+
+      /** Sembunyikan pesan error umum */
+      function hideGeneral() {
+        generalError.style.display = 'none';
+        generalError.textContent = '';
+      }
+    });
+  </script>
 </body>
+
 </html>

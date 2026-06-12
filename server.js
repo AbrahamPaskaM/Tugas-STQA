@@ -49,9 +49,5 @@ app.use((err, req, res, next) => {
 // Start Server
 // =============================================
 app.listen(PORT, () => {
-    console.log(`\n🚀 Server berjalan di http://localhost:${PORT}`);
-    console.log(`📄 Portfolio : http://localhost:${PORT}/`);
-    console.log(`📄 Login     : http://localhost:${PORT}/login.html`);
-    console.log(`📄 Register  : http://localhost:${PORT}/register.html`);
-    console.log(`\n📦 Data user disimpan di MySQL database\n`);
+    console.log(`\n🚀 http://localhost:${PORT}\n`);
 });
